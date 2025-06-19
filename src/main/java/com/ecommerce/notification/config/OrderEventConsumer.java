@@ -1,18 +1,20 @@
 package com.ecommerce.notification.config;
 
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import com.ecommerce.notification.payload.OrderCreatedEventDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.function.Consumer;
 
+@Slf4j
 @Service
 public class OrderEventConsumer {
-    @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void handleOrderEvent(Map<String, Object> orderEvent) {
-        System.out.println("Received order event: " + orderEvent);
-
-        long orderId = Long.parseLong(orderEvent.get("orderId").toString());
-        String status = orderEvent.get("status").toString();
-        System.out.println("Received order event with orderId: " + orderId + ", status: " + status);
+    @Bean
+    public Consumer<OrderCreatedEventDTO> orderCreated() {
+        return event -> {
+            log.info("Received Order Created Event for order: {}", event.getOrderId());
+            log.info("Received Order Created Event for user: {}", event.getUserId());
+        };
     }
 }
